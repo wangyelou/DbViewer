@@ -1,0 +1,51 @@
+<html>
+
+	<head>
+		
+		<link rel="stylesheet" href="./layui/css/layui.css"/>
+		<script src="./layui/layui.js"></script>
+	</head>
+
+	<script type="text/javascript">
+		layui.use('table', function(){
+			var $ = layui.jquery, layer = layui.layer, table = layui.table; 
+			//layer.alert('你好么，体验者');
+
+
+		  //直接赋值数据
+		  table.render({
+		    elem: '#demo'
+		    //,width: 900
+		    //,height: 274
+		    ,cols: [[ //标题栏
+		      {type: 'checkbox', LAY_CHECKED: true}
+		      ,{field: 'id', title: 'ID', width: 80, sort: true}
+		      ,{field: 'space',  width: 100} //空列
+		      ,{field: 'username', title: '用户名', width: 120}
+		      ,{field: 'email', title: '邮箱', width: 150}
+		    ]]
+		    ,url : 'http://localhost/DbViewer/index.php',
+		    method : 'post',
+		    where : {
+		    	type : 'mysql',
+		    	query : 'select 1 id 2 space, 3 username, 4 email'
+		    },
+		    done: function(res, curr, count){
+		    	if (res.code != 0) {
+		    		layer.alert(res.msg);
+		    	}
+		    }
+		    ,skin: 'row' //表格风格
+		    ,even: true
+		    //,size: 'lg' //尺寸
+		    ,page: true //是否显示分页
+		    ,limits: [3,5,10]
+		    ,limit: 3 //每页默认显示的数量
+		    //,loading: false //请求数据时，是否显示loading
+		  });
+		});
+	</script>
+
+
+<table id="demo" lay-filter="test"></table>
+</html>
