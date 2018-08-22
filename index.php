@@ -8,31 +8,22 @@ require_once './config/autoloader.php';
 
 try {
 	//获取参数
-	$param = $_POST;
-	if (!isset($param['type']) || !isset($param['query'])) {
+	$GLOBALS['param'] = array_merge($_POST, $_GET);
+
+	if (!isset($GLOBALS['param']['contro']) || !isset($GLOBALS['param']['action'])) {
 		throw new Exception('', -100);
-	} else {
-		$type = $param['type'];
-		$query = $param['query'];
-		$dbName = isset($param['dbName']) ? $param['dbName'] : false;
 	}
 
-	//是否存在配置
-	if (!isset(DBCONFIGS[$type]) || count(DBCONFIGS[$type]) <= 0) {
-		throw new Exception('', -101);
-	} else {
-		$config = DBCONFIGS[$type];
-	}
-
-	$classType = ucfirst(strtolower($config['type']));
-	$class = '\DbViewer\DbData\\' . $classType;
+	$contro = ucfirst(strtolower($GLOBALS['param']['contro']));
+	$class = '\DbViewer\Task\\' . $contro;
 	if (!file_exists(dirname(BASE_PATH) . SEPATATOR . strtr($class, '\\', SEPATATOR) . '.' . EXT)){
 		throw new Exception('', -101);
 	}
-	$handler = new $class();
-	$handler->connect($config);
-	$result = $handler->findAll($query, $dbName);
-
+	$obj = new $class();
+	if (!method_exists($obj, $GLOBALS['param']['action'])) {
+		throw new Exception('', -101);
+	}
+	$result = call_user_func(array($obj, $param['action']));
 	\DbViewer\Log\Prints::write(0, NULL, $result);
 
 

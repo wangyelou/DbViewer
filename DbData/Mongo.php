@@ -57,22 +57,66 @@ class Mongo extends DbAbstract
 
 	/**
 	 * 查找数据
-	 * @param  [type] $query  [description]
+	 * @param  [type] $command  [description]
 	 * @param  [type] $dbName [description]
 	 * @return [type]         [description]
 	 */
-	public function findAll($query, $dbName)
+	public function findAll($command, $dbName)
 	{
-        if (($command = json_decode($query, true)) === NULL) {
-            throw new \Exception('query is invalid');
-        }
         $result = $this->command($command, $dbName); 
 		return $result;
 	}
 
-	public function getTables()
+	/**
+	 * 返回表名
+	 * @return [type] [description]
+	 */
+	public function getDbs()
 	{
+		$result = $this->command(array('listDatabases'=>1, 'nameOnly'=>true), 'admin');
+		$newData = array();
+		foreach ($result[0]->databases as $item) {
+        	$newData[] = $item->name;
+        }
+		return $newData;
 
+	}
+
+	/**
+	 * 获取集合名称
+	 * @param  [type] $dbName [description]
+	 * @return [type]         [description]
+	 */
+	public function getTables($dbName)
+	{
+		$result = $this->command(array('listCollections'=>1, 'nameOnly'=>true), $dbName);
+		$newData = array();
+		foreach ($result as $item) {
+        	$newData[] = $item->name;
+        }
+		return $newData;
+
+	}
+
+	/**
+	 * 格式化查询语句
+	 * @param  [type] $query [description]
+	 * @return [type]        [description]
+	 */
+	public function formatQuery($query, $tableName) 
+	{
+		if ($query) {
+	        if (($command = json_decode($query, true)) === NULL) {
+	            throw new \Exception('query is invalid');
+	        }
+		} else {
+			$command = array(
+				'find' => $tableName,
+				'sort' => array('_id' => 1),
+				'limit' => 30
+			);
+		}
+		return $command;
 	}
 
 }

@@ -1,51 +1,113 @@
 <html>
 
 	<head>
-		
-		<link rel="stylesheet" href="./layui/css/layui.css"/>
-		<script src="./layui/layui.js"></script>
+		<link rel="stylesheet" type="text/css" href="./jquery-easyui-1.5.4/themes/black/easyui.css"> 
+		<link rel="stylesheet" type="text/css" href="./jquery-easyui-1.5.4/themes/icon.css">
+		<script type="text/javascript" src="./jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="./jquery-easyui-1.5.4/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="./functions.js"></script>
+		<style type="text/css">
+			* {
+				padding : 0;
+				margin : 0;
+			}
+		</style>
+		<script type="text/javascript">
+			window.APIS = {
+				'getConfLists':'/DbViewer/index.php?contro=Configtask&action=getConfLists',	//获取配置列表
+				'getDbLists':'/DbViewer/index.php?contro=Dbtask&action=dbName', //获取数据库列表
+				'getTableLists':'/DbViewer/index.php?contro=Dbtask&action=tableName', //获表名列表
+				'getDataLists':'/DbViewer/index.php?contro=Dbtask&action=getData', //获数据列表
+			};
+
+			$(function() {
+				//导航条
+				$('#sidebar').tree({
+					width : '100%',
+					url : window.APIS.getConfLists,
+					loadFilter : function(data) {
+						if (data.code == undefined) {
+							return data;
+						}
+						if (data.code == 0) {
+							var newData = new Array();
+							$.each(data.data, function (n, item){
+								newData.push({
+									id : item,
+									text : item,
+									type : 'conf',
+									iconCls : 'icon-more'
+								});
+							});
+							return newData;
+						} else {
+							$.messager.alert('警告', data.msg);
+						}
+					},
+					onDblClick : function(node) {
+						treeDbClick(node);
+					},
+					onClick : function(node) {
+						if (node.type != 'conf') {
+
+							//获取标识
+							var se = $('#sidebar').tree('getSelected');
+							if (node.type == 'table') {
+								var node = $('#sidebar').tree('getParent',$('#sidebar').tree('getParent', se.target).target);
+							} else if (node.type == 'db') {
+								var node = $('#sidebar').tree('getParent', se.target);
+							}
+							if (node.id.indexOf('mongo') != -1) {
+								var prompt = `{find : test, filter : {}}`;
+							} else {
+								var prompt = '';
+							}
+
+							$('#tabs').tabs('add', {
+								title : 'Query',
+								closable : true,
+								content : `<input class="easyui-textbox" data-options="multiline:true, width:'100%', height:'100%', prompt:'`+prompt+`'"/>`,
+							});
+						}
+					}
+				});
+
+				//tab
+				$('#tabs').tabs({
+				    tools:[{
+				        iconCls:'icon-search',
+				        handler:function(){
+				            select();
+				        }
+				    }]
+				});
+
+
+			});
+
+
+		</script>
 	</head>
 
-	<script type="text/javascript">
-		layui.use('table', function(){
-			var $ = layui.jquery, layer = layui.layer, table = layui.table; 
-			//layer.alert('你好么，体验者');
+	<body>
 
 
-		  //直接赋值数据
-		  table.render({
-		    elem: '#demo'
-		    //,width: 900
-		    //,height: 274
-		    ,cols: [[ //标题栏
-		      {type: 'checkbox', LAY_CHECKED: true}
-		      ,{field: 'id', title: 'ID', width: 80, sort: true}
-		      ,{field: 'space',  width: 100} //空列
-		      ,{field: 'username', title: '用户名', width: 120}
-		      ,{field: 'email', title: '邮箱', width: 150}
-		    ]]
-		    ,url : 'http://localhost/DbViewer/index.php',
-		    method : 'post',
-		    where : {
-		    	type : 'mysql',
-		    	query : 'select 1 id 2 space, 3 username, 4 email'
-		    },
-		    done: function(res, curr, count){
-		    	if (res.code != 0) {
-		    		layer.alert(res.msg);
-		    	}
-		    }
-		    ,skin: 'row' //表格风格
-		    ,even: true
-		    //,size: 'lg' //尺寸
-		    ,page: true //是否显示分页
-		    ,limits: [3,5,10]
-		    ,limit: 3 //每页默认显示的数量
-		    //,loading: false //请求数据时，是否显示loading
-		  });
-		});
-	</script>
 
 
-<table id="demo" lay-filter="test"></table>
+	<div id="cc" class="easyui-layout" style="width:100%;height:100%;">
+		<div data-options="region:'west',split:true" title="List" style="width:150px;">
+			<div id="sidebar"></div>
+		</div>
+
+		<div data-options="region:'center',title:'Data'">
+			<div id="tabs" style="width:100%;height:250px"></div>
+			<div id="tables" style="width:100%;height:450px"></div>
+		</div>
+	</div>
+
+
+	<div id="window"></div>
+
+	</body>
+
 </html>

@@ -7,6 +7,6 @@ abstract class DbAbstract
 
 	public function findAll($query, $dbName){}
 
-	public function getTables(){}
+	public function getTables($dbName){}
 
 }
