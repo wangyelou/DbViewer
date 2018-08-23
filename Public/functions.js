@@ -165,7 +165,7 @@ function setDatas(data) {
 			title : keyName,
 			width : 10,
 			formatter : function(value, row, index) {
-				if (typeof(value) == 'string')
+				if (typeof(value) == 'string' || value == null)
 					return value;
 				else {
 					if (value['$oid'] != undefined) {

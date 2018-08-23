@@ -65,9 +65,46 @@ class Pgsql extends DbAbstract
 		return $result;
 	}
 
-	public function getTables()
+	/**
+	 * 返回表名
+	 * @return [type] [description]
+	 */
+	public function getDbs()
 	{
+		$result = $this->findAll('SELECT datname FROM pg_database;');
+		$newData = array();
+		foreach ($result as $item) {
+        	$newData[] = $item['datname'];
+        }
+		return $newData;
 
+	}
+
+	/**
+	 * 获取表名
+	 * @param  [type] $dbName [description]
+	 * @return [type]         [description]
+	 */
+	public function getTables($dbName)
+	{
+		
+		return array();
+
+	}
+
+	/**
+	 * 格式化查询语句
+	 * @param  [type] $query [description]
+	 * @return [type]        [description]
+	 */
+	public function formatQuery($query, $tableName) 
+	{
+		if ($query) {
+			$command = $query;
+		} else {
+	        $command = "select * from {$tableName} limit 10";
+		}
+		return $command;
 	}
 
 }
