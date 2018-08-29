@@ -67,6 +67,15 @@
 .icon-more{
 	background:url('icons/more.png') no-repeat center center;
 }
+.icon-types{
+    background:url('icons/types.png') no-repeat center center; 
+}
+.icon-db{
+    background:url('icons/db.png') no-repeat center center;
+}
+.icon-table{
+    background:url('icons/table.png') no-repeat center center;
+}
 
 
 .icon-mini-add{

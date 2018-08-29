@@ -66,7 +66,7 @@ class Mysql extends DbAbstract
 	 */
 	public function getDbs()
 	{
-		$result = $this->findAll("show databases;");
+		$result = $this->findAll("show databases;", 'mysql');
 		$newData = array();
 		foreach ($result as $item) {
         	$newData[] = $item['Database'];

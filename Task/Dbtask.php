@@ -19,7 +19,7 @@ class Dbtask
 			throw new \Exception('', -100);
 		}
 
-		$handler = $this->publicMethod();
+        $handler = $this->publicMethod();
 		return $handler->getDbs();
 	}
 

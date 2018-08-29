@@ -1,113 +1,93 @@
 <html>
 
-	<head>
-		<link rel="stylesheet" type="text/css" href="./jquery-easyui-1.5.4/themes/black/easyui.css"> 
-		<link rel="stylesheet" type="text/css" href="./jquery-easyui-1.5.4/themes/icon.css">
-		<script type="text/javascript" src="./jquery-3.3.1.min.js"></script>
-		<script type="text/javascript" src="./jquery-easyui-1.5.4/jquery.easyui.min.js"></script>
-		<script type="text/javascript" src="./functions.js"></script>
-		<style type="text/css">
-			* {
-				padding : 0;
-				margin : 0;
-			}
-		</style>
-		<script type="text/javascript">
-			window.APIS = {
-				'getConfLists':'/DbViewer/index.php?contro=Configtask&action=getConfLists',	//获取配置列表
-				'getDbLists':'/DbViewer/index.php?contro=Dbtask&action=dbName', //获取数据库列表
-				'getTableLists':'/DbViewer/index.php?contro=Dbtask&action=tableName', //获表名列表
-				'getDataLists':'/DbViewer/index.php?contro=Dbtask&action=getData', //获数据列表
-			};
+    <head>
+        <link rel="stylesheet" type="text/css" href="./jquery-easyui-1.5.4/themes/black/easyui.css"> 
+        <link rel="stylesheet" type="text/css" href="./jquery-easyui-1.5.4/themes/icon.css">
+        <script type="text/javascript" src="./jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="./jquery-easyui-1.5.4/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="./functions.js"></script>
+        <style type="text/css">
+            * {
+                padding : 0;
+                margin : 0;
+            }
+        </style>
+        <script type="text/javascript">
+            window.APIS = {
+                'getConfLists':'/DbViewer/index.php?contro=Configtask&action=getConfLists',    //获取配置列表
+                'getDbLists':'/DbViewer/index.php?contro=Dbtask&action=dbName', //获取数据库列表
+                'getTableLists':'/DbViewer/index.php?contro=Dbtask&action=tableName', //获表名列表
+                'getDataLists':'/DbViewer/index.php?contro=Dbtask&action=getData', //获数据列表
+            };
 
-			$(function() {
-				//导航条
-				$('#sidebar').tree({
-					width : '100%',
-					url : window.APIS.getConfLists,
-					loadFilter : function(data) {
-						if (data.code == undefined) {
-							return data;
-						}
-						if (data.code == 0) {
-							var newData = new Array();
-							$.each(data.data, function (n, item){
-								newData.push({
-									id : item,
-									text : item,
-									type : 'conf',
-									iconCls : 'icon-more'
-								});
-							});
-							return newData;
-						} else {
-							$.messager.alert('警告', data.msg);
-						}
-					},
-					onDblClick : function(node) {
-						treeDbClick(node);
-					},
-					onClick : function(node) {
-						if (node.type != 'conf') {
+            $(function() {
+                //导航条
+                $('#sidebar').tree({
+                    width : '100%',
+                    url : window.APIS.getConfLists,
+                    loadFilter : function(data) {
+                        if (data.code == undefined) {
+                            return data;
+                        }
+                        if (data.code == 0) {
+                            var newData = new Array();
+                            $.each(data.data, function (n, item){
+                                newData.push({
+                                    id : item,
+                                    text : item,
+                                    type : 'conf',
+                                    iconCls : 'icon-types'
+                                });
+                            });
+                            return newData;
+                        } else {
+                            $.messager.alert('警告', data.msg);
+                        }
+                    },
+                    onDblClick : function(node) {
+                        treeDbClick(node);
+                    }
+                });
 
-							//获取标识
-							var se = $('#sidebar').tree('getSelected');
-							if (node.type == 'table') {
-								var node = $('#sidebar').tree('getParent',$('#sidebar').tree('getParent', se.target).target);
-							} else if (node.type == 'db') {
-								var node = $('#sidebar').tree('getParent', se.target);
-							}
-							if (node.id.indexOf('mongo') != -1) {
-								var prompt = `{find : test, filter : {}}`;
-							} else {
-								var prompt = '';
-							}
-
-							$('#tabs').tabs('add', {
-								title : 'Query',
-								closable : true,
-								content : `<input class="easyui-textbox" data-options="multiline:true, width:'100%', height:'100%', prompt:'`+prompt+`'"/>`,
-							});
-						}
-					}
-				});
-
-				//tab
-				$('#tabs').tabs({
-				    tools:[{
-				        iconCls:'icon-search',
-				        handler:function(){
-				            select();
-				        }
-				    }]
-				});
+                //tab
+                $('#tabs').tabs({
+                    tools:[{
+                        iconCls:'icon-search',
+                        handler:function(){
+                            select();
+                        }
+                    },{
+                        iconCls:'icon-add',
+                        handler:function(){
+                            newWindow();
+                        }
+                    }]
+                });
 
 
-			});
+            });
 
 
-		</script>
-	</head>
+        </script>
+    </head>
 
-	<body>
+    <body>
 
 
 
 
-	<div id="cc" class="easyui-layout" style="width:100%;height:100%;">
-		<div data-options="region:'west',split:true" title="List" style="width:150px;">
-			<div id="sidebar"></div>
-		</div>
+    <div id="cc" class="easyui-layout" style="width:100%;height:100%;">
+        <div data-options="region:'west',split:true" title="List" style="width:150px;">
+            <div id="sidebar"></div>
+        </div>
 
-		<div data-options="region:'center',title:'Data'">
-			<div id="tabs" style="width:100%;height:250px"></div>
-			<div id="tables" style="width:100%;height:450px"></div>
-		</div>
-	</div>
+        <div data-options="region:'center',title:'Data'">
+            <div id="tabs" style="width:100%;height:250px"></div>
+            <div id="tables" style="width:100%;height:450px"></div>
+        </div>
+    </div>
+    <div id="window"></div>
 
-
-	<div id="window"></div>
-
-	</body>
+    </body>
 
 </html>
