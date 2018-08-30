@@ -50,7 +50,7 @@ class Pgsql extends DbAbstract
 	 * @param  [type] $dbName [description]
 	 * @return [type]         [description]
 	 */
-	public function findAll($query, $dbName)
+	public function findAll($query, $dbName = '')
 	{
 		if ($dbName && pg_dbname($this->dbh) != $dbName) {
             $config = $this->config;

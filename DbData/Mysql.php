@@ -50,7 +50,7 @@ class Mysql extends DbAbstract
 	 * @param  [type] $dbName [description]
 	 * @return [type]         [description]
 	 */
-	public function findAll($query, $dbName)
+	public function findAll($query, $dbName = '')
 	{
 		if ($dbName)
 			$this->dbh->query("use {$dbName};");
@@ -66,7 +66,7 @@ class Mysql extends DbAbstract
 	 */
 	public function getDbs()
 	{
-		$result = $this->findAll("show databases;", 'mysql');
+		$result = $this->findAll("show databases;");
 		$newData = array();
 		foreach ($result as $item) {
         	$newData[] = $item['Database'];
